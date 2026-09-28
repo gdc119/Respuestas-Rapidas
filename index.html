@@ -128,7 +128,7 @@
             padding-bottom: 5px;
         }
 
-        .tab-btn, .tab-btn:hover {
+        .tab-btn {
             border: none !important;
             background: none !important;
             padding: 10px 15px;
@@ -136,9 +136,10 @@
             border-radius: 6px 6px 0 0;
             white-space: nowrap;
             color: #6c757d;
+            cursor: pointer;
         }
 
-        .tab-btn.active, .tab-btn.active:hover {
+        .tab-btn.active {
             background: none !important;
             color: var(--primary-color) !important;
             border-bottom: 3px solid var(--primary-color) !important;
@@ -245,7 +246,6 @@
         }
         .tr-field input { padding: 5px; width: 80px; }
 
-        /* ESTILOS PARA LA AGENDA DE CONTACTOS CON BOTÓN EDITAR */
         .form-agenda {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -306,7 +306,6 @@
             cursor: pointer;
         }
 
-        /* ESTILOS DE LA SECCIÓN INSPECCIONES */
         .inspeccion-card {
             background: #f8f9fa;
             border: 1px solid var(--border-color);
@@ -324,21 +323,10 @@
             align-items: center;
         }
 
-        .inspeccion-header h3 {
-            font-size: 15px;
-            color: #333;
-        }
+        .inspeccion-header h3 { font-size: 15px; color: #333; }
 
-        .inspeccion-controls {
-            display: flex;
-            gap: 8px;
-        }
-
-        .inspeccion-controls input {
-            flex: 1;
-            font-size: 13px;
-            padding: 8px;
-        }
+        .inspeccion-controls { display: flex; gap: 8px; }
+        .inspeccion-controls input { flex: 1; font-size: 13px; padding: 8px; }
 
         .btn-abrir-link {
             background-color: var(--primary-color);
@@ -350,10 +338,7 @@
             font-weight: bold;
             display: inline-block;
         }
-
-        .btn-abrir-link:hover {
-            background-color: #0b5ed7;
-        }
+        .btn-abrir-link:hover { background-color: #0b5ed7; }
 
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
@@ -364,7 +349,7 @@
 <div class="container">
     <h1>Asistente de Mensajes Automáticos</h1>
 
-    <!-- SECCIÓN: DATOS ASEGURADO -->
+    <!-- DATOS ASEGURADO -->
     <div class="section">
         <div class="section-title">Datos del Asegurado</div>
         <div class="input-group">
@@ -383,7 +368,7 @@
         </div>
     </div>
 
-    <!-- SECCIÓN: SELECCIÓN DE COMPAÑÍA -->
+    <!-- SELECCIÓN DE COMPAÑÍA -->
     <div class="section" id="section-companias-global">
         <div class="section-title">Compañía Seleccionada</div>
         <select id="selectCompania" onchange="cambiarCompaniaGlobal()">
@@ -405,11 +390,11 @@
 
     <!-- PESTAÑAS PRINCIPALES DE MENÚ -->
     <div class="nav-tabs">
-        <button class="tab-btn active" onclick="switchTab('pagos')">PAGOS</button>
-        <button class="tab-btn" onclick="switchTab('siniestros')">SINIESTROS</button>
-        <button class="tab-btn" onclick="switchTab('comercial')">COMERCIAL</button>
-        <button class="tab-btn" onclick="switchTab('datos-cias')">DATOS COMPAÑÍAS</button>
-        <button class="tab-btn" onclick="switchTab('inspecciones-tab')">INSPECCIONES</button>
+        <button class="tab-btn active" onclick="switchTab(event, 'pagos')">PAGOS</button>
+        <button class="tab-btn" onclick="switchTab(event, 'siniestros')">SINIESTROS</button>
+        <button class="tab-btn" onclick="switchTab(event, 'comercial')">COMERCIAL</button>
+        <button class="tab-btn" onclick="switchTab(event, 'datos-cias')">DATOS COMPAÑÍAS</button>
+        <button class="tab-btn" onclick="switchTab(event, 'inspecciones-tab')">INSPECCIONES</button>
     </div>
 
     <!-- PANEL: PAGOS -->
@@ -437,12 +422,11 @@
     <!-- PANEL: COMERCIAL -->
     <div id="panel-comercial" class="sub-panel">
         <div class="nav-tabs" style="border-bottom: 1px solid var(--border-color); margin-bottom: 10px;">
-            <button class="tab-btn sub-tab active" id="stab-cotiz" onclick="switchSubTab('cotiz')">Cotización</button>
-            <button class="tab-btn sub-tab" id="stab-seguim" onclick="switchSubTab('seguim')">Seguimientos</button>
-            <button class="tab-btn sub-tab" id="stab-inspec" onclick="switchSubTab('inspec')">Inspección</button>
+            <button class="tab-btn sub-tab active" id="stab-cotiz" onclick="switchSubTab(event, 'cotiz')">Cotización</button>
+            <button class="tab-btn sub-tab" id="stab-seguim" onclick="switchSubTab(event, 'seguim')">Seguimientos</button>
+            <button class="tab-btn sub-tab" id="stab-inspec" onclick="switchSubTab(event, 'inspec')">Inspección</button>
         </div>
 
-        <!-- Sub-panel: Cotizaciones -->
         <div id="sub-com-cotiz" class="sub-panel active">
             <div id="tr-valores-box" style="display:none; padding: 10px; border: 1px dashed #ccc; margin-bottom: 10px; border-radius: 6px;">
                 <div style="font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #6c757d;">COSTOS FRANQUICIAS TODO RIESGO:</div>
@@ -471,7 +455,6 @@
             </div>
         </div>
 
-        <!-- Sub-panel: Seguimientos -->
         <div id="sub-com-seguim" class="sub-panel">
             <div class="grid-buttons">
                 <button onclick="generarMensaje('seg_2')" id="btn-seg_2">📩 2do Contacto</button>
@@ -479,7 +462,6 @@
             </div>
         </div>
 
-        <!-- Sub-panel: Inspecciones -->
         <div id="sub-com-inspec" class="sub-panel">
             <div class="grid-buttons">
                 <button onclick="generarMensaje('insp_link')" id="btn-insp_link">🔗 Link Sistema</button>
@@ -491,60 +473,114 @@
 
     <!-- PANEL: DATOS COMPAÑÍAS -->
     <div id="panel-datos-cias" class="sub-panel">
-        <div class="section-title">Servicios e Información Dinámica</div>
-        <div class="grid-buttons" style="margin-bottom: 15px;">
-            <button onclick="generarMensaje('cia_grua')" id="btn-cia_grua" style="grid-column: 1 / -1; background-color: #fff8eb; font-weight: bold;">📞 COORDINAR GRÚA</button>
+        <div class="nav-tabs" style="border-bottom: 1px solid var(--border-color); margin-bottom: 15px;">
+            <button class="tab-btn sub-cias-tab active" id="stab-cias-general" onclick="switchSubCiasTab(event, 'general')">Cía Comercial</button>
+            <button class="tab-btn sub-cias-tab" id="stab-cias-visred" onclick="switchSubCiasTab(event, 'visred')">VisRed</button>
         </div>
-        
-        <div style="border-top: 1px solid var(--border-color); padding-top: 10px;">
-            <div style="font-size: 12px; font-weight: bold; color:#6c757d; margin-bottom: 8px;">MÓDULOS DE CARGA DE AGENDA:</div>
-            <div class="grid-buttons">
-                <button onclick="filtrarAgenda('Comercial')" style="background-color: #e7f5ff;">🏢 Cía Comercial</button>
-                <button onclick="filtrarAgenda('Siniestros')" style="background-color: #e7f5ff;">📂 Cía Siniestros</button>
-                <button onclick="filtrarAgenda('Peritos')" style="background-color: #e7f5ff;">🔍 Peritos</button>
-                <button onclick="filtrarAgenda('Administración')" style="background-color: #e7f5ff;">📄 Administración</button>
-                <button onclick="filtrarAgenda('Todos')" style="background-color: #f1f3f5;">🌐 Ver Todos</button>
+
+        <!-- SUB-PANEL: CÍA COMERCIAL -->
+        <div id="sub-cias-general" class="sub-panel active">
+            <div class="section-title">Servicios e Información Dinámica</div>
+            <div class="grid-buttons" style="margin-bottom: 15px;">
+                <button onclick="generarMensaje('cia_grua')" id="btn-cia_grua" style="grid-column: 1 / -1; background-color: #fff8eb; font-weight: bold;">📞 COORDINAR GRÚA</button>
+            </div>
+            
+            <div style="border-top: 1px solid var(--border-color); padding-top: 10px;">
+                <div style="font-size: 12px; font-weight: bold; color:#6c757d; margin-bottom: 8px;">MÓDULOS DE FILTRADO:</div>
+                <div class="grid-buttons">
+                    <button onclick="filtrarAgenda('Comercial')" style="background-color: #e7f5ff;">🏢 Cía Comercial</button>
+                    <button onclick="filtrarAgenda('Todos')" style="background-color: #f1f3f5;">🌐 Ver Todos</button>
+                </div>
+            </div>
+
+            <!-- FORMULARIO AGENDA DE CONTACTOS GENERAL -->
+            <div class="form-agenda">
+                <div class="full-width" id="formAgendaTitulo" style="font-size: 13px; font-weight: bold; color: #495057;">➕ CARGAR CONTACTO DE COMPAÑÍA</div>
+                <input type="hidden" id="agendaEditId" value="">
+                <div>
+                    <label style="font-size: 11px; color: #6c757d;">Rol / Puesto</label>
+                    <select id="agendaRol">
+                        <option value="Gerente">Gerente</option>
+                        <option value="Ejecutivo Comercial">Ejecutivo comercial</option>
+                        <option value="Administración">Administración</option>
+                        <option value="Siniestros">Siniestros</option>
+                        <option value="Peritos">Peritos</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 11px; color: #6c757d;">Nombre y Apellido</label>
+                    <input type="text" id="agendaNombre" placeholder="Ej: Pedro Gómez">
+                </div>
+                <div>
+                    <label style="font-size: 11px; color: #6c757d;">Teléfono 1</label>
+                    <input type="text" id="agendaTel1" placeholder="Ej: 3511234567">
+                </div>
+                <div>
+                    <label style="font-size: 11px; color: #6c757d;">Teléfono 2</label>
+                    <input type="text" id="agendaTel2" placeholder="Ej: 3519876543">
+                </div>
+                <div class="full-width">
+                    <label style="font-size: 11px; color: #6c757d;">Correo Electrónico</label>
+                    <input type="email" id="agendaMail" placeholder="ejemplo@compania.com">
+                </div>
+                <button class="btn-guardar full-width" id="btnGuardarContacto" onclick="guardarContacto()">💾 Cargar Contacto</button>
+                <button class="full-width" id="btnCancelarEdicion" onclick="cancelarEdicion()" style="display:none; background:#6c757d; color:white; border:none; margin-top:-5px;">Cancelar Edición</button>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <div class="section-title" id="tituloAgendaListado">Contactos Guardados</div>
+                <div id="listaContactos"></div>
             </div>
         </div>
 
-        <!-- FORMULARIO AGENDA DE CONTACTOS -->
-        <div class="form-agenda">
-            <div class="full-width" id="formAgendaTitulo" style="font-size: 13px; font-weight: bold; color: #495057;">➕ CARGAR CONTACTO DE COMPAÑÍA</div>
-            <input type="hidden" id="agendaEditId" value="">
-            <div>
-                <label style="font-size: 11px; color: #6c757d;">Rol / Puesto</label>
-                <select id="agendaRol">
-                    <option value="Gerente">Gerente</option>
-                    <option value="Ejecutivo Comercial">Ejecutivo comercial</option>
-                    <option value="Administración">Administración</option>
-                    <option value="Siniestros">Siniestros</option>
-                    <option value="Peritos">Peritos</option>
-                </select>
+        <!-- SUB-PANEL: VISRED -->
+        <div id="sub-cias-visred" class="sub-panel">
+            <div class="section-title">Estructura VisRed</div>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <div>
+                    <label style="font-size: 11px; color: #6c757d; font-weight: bold;">SECCIÓN VISRED</label>
+                    <select id="vrSeccion" onchange="cambiarFiltroVisRed()">
+                        <option value="Generales">Generales</option>
+                        <option value="Vida">Vida</option>
+                        <option value="ART">ART</option>
+                    </select>
+                </div>
+                <div>
+                    <label style="font-size: 11px; color: #6c757d; font-weight: bold;">ÁREA</label>
+                    <select id="vrArea" onchange="cambiarFiltroVisRed()">
+                        <option value="Administración">Administración</option>
+                        <option value="Comercial">Comercial</option>
+                        <option value="Siniestros">Siniestros</option>
+                    </select>
+                </div>
             </div>
-            <div>
-                <label style="font-size: 11px; color: #6c757d;">Nombre y Apellido</label>
-                <input type="text" id="agendaNombre" placeholder="Ej: Pedro Gómez">
-            </div>
-            <div>
-                <label style="font-size: 11px; color: #6c757d;">Teléfono 1</label>
-                <input type="text" id="agendaTel1" placeholder="Ej: 3511234567">
-            </div>
-            <div>
-                <label style="font-size: 11px; color: #6c757d;">Teléfono 2</label>
-                <input type="text" id="agendaTel2" placeholder="Ej: 3519876543">
-            </div>
-            <div class="full-width">
-                <label style="font-size: 11px; color: #6c757d;">Correo Electrónico</label>
-                <input type="email" id="agendaMail" placeholder="ejemplo@compania.com">
-            </div>
-            <button class="btn-guardar full-width" id="btnGuardarContacto" onclick="guardarContacto()">💾 Cargar Contacto</button>
-            <button class="full-width" id="btnCancelarEdicion" onclick="cancelarEdicion()" style="display:none; background:#6c757d; color:white; border:none; margin-top:-5px;">Cancelar Edición</button>
-        </div>
 
-        <!-- LISTADO DE CONTACTOS GUARDADOS -->
-        <div style="margin-top: 15px;">
-            <div class="section-title" id="tituloAgendaListado">Contactos Guardados</div>
-            <div id="listaContactos"></div>
+            <!-- FORMULARIO VISRED -->
+            <div class="form-agenda" style="background: #eef2f7;">
+                <div class="full-width" id="vrFormTitulo" style="font-size: 13px; font-weight: bold; color: #0d6efd;">➕ CARGAR CONTACTO EN VISRED</div>
+                <input type="hidden" id="vrEditId" value="">
+                
+                <div class="full-width">
+                    <label style="font-size: 11px; color: #6c757d;">Nombre y Apellido</label>
+                    <input type="text" id="vrNombre" placeholder="Ej: María Fernández">
+                </div>
+                <div>
+                    <label style="font-size: 11px; color: #6c757d;">Teléfono</label>
+                    <input type="text" id="vrTelefono" placeholder="Ej: 3515554433">
+                </div>
+                <div>
+                    <label style="font-size: 11px; color: #6c757d;">Mail</label>
+                    <input type="email" id="vrMail" placeholder="ejemplo@visred.com">
+                </div>
+                <button class="btn-guardar full-width" id="vrBtnGuardar" onclick="guardarContactoVisRed()">💾 Guardar Contacto VisRed</button>
+                <button class="full-width" id="vrBtnCancelar" onclick="cancelarEdicionVisRed()" style="display:none; background:#6c757d; color:white; border:none; margin-top:-5px;">Cancelar Edición</button>
+            </div>
+
+            <div style="margin-top: 15px;">
+                <div class="section-title" id="vrTituloListado">Contactos VisRed</div>
+                <div id="listaContactosVisRed"></div>
+            </div>
         </div>
     </div>
 
@@ -552,7 +588,6 @@
     <div id="panel-inspecciones-tab" class="sub-panel">
         <div class="section-title">Links de Formulario de Inspección</div>
         
-        <!-- AUTO -->
         <div class="inspeccion-card">
             <div class="inspeccion-header">
                 <h3>🚗 Auto</h3>
@@ -564,7 +599,6 @@
             </div>
         </div>
 
-        <!-- MOTO -->
         <div class="inspeccion-card">
             <div class="inspeccion-header">
                 <h3>🏍️ Moto</h3>
@@ -576,7 +610,6 @@
             </div>
         </div>
 
-        <!-- BICICLETA -->
         <div class="inspeccion-card">
             <div class="inspeccion-header">
                 <h3>🚲 Bicicleta</h3>
@@ -588,7 +621,6 @@
             </div>
         </div>
 
-        <!-- OTROS -->
         <div class="inspeccion-card">
             <div class="inspeccion-header">
                 <h3>📋 Otros</h3>
@@ -661,11 +693,11 @@
         cargarLinksInspeccion();
     });
 
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-btn:not(.sub-tab)').forEach(btn => btn.classList.remove('active'));
+    function switchTab(e, tabId) {
+        document.querySelectorAll('.container > .nav-tabs > .tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.container > .sub-panel').forEach(panel => panel.classList.remove('active'));
         
-        event.target.classList.add('active');
+        e.currentTarget.classList.add('active');
         document.getElementById('panel-' + tabId).classList.add('active');
         
         if(tabId === 'siniestros' || tabId === 'inspecciones-tab') {
@@ -675,13 +707,14 @@
         }
         if(tabId === 'datos-cias') {
             renderizarContactos();
+            renderizarContactosVisRed();
         }
         clearActiveButtons();
     }
 
-    function switchSubTab(subTabId) {
+    function switchSubTab(e, subTabId) {
         document.querySelectorAll('.sub-tab').forEach(btn => btn.classList.remove('active'));
-        document.getElementById('stab-' + subTabId).classList.add('active');
+        e.currentTarget.classList.add('active');
         
         document.getElementById('sub-com-cotiz').classList.remove('active');
         document.getElementById('sub-com-seguim').classList.remove('active');
@@ -689,6 +722,19 @@
         
         document.getElementById('sub-com-' + subTabId).classList.add('active');
         clearActiveButtons();
+    }
+
+    function switchSubCiasTab(e, subCiasId) {
+        document.querySelectorAll('.sub-cias-tab').forEach(btn => btn.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        
+        document.getElementById('sub-cias-general').classList.remove('active');
+        document.getElementById('sub-cias-visred').classList.remove('active');
+        
+        document.getElementById('sub-cias-' + subCiasId).classList.add('active');
+
+        if(subCiasId === 'general') renderizarContactos();
+        if(subCiasId === 'visred') renderizarContactosVisRed();
     }
 
     function clearActiveButtons() {
@@ -813,7 +859,6 @@
         document.getElementById('outputTexto').value = textoFinal;
     }
 
-    // LÓGICA DE INSPECCIONES
     function guardarLinkInspeccion(tipo) {
         const input = document.getElementById(`input-link-${tipo}`);
         const url = input.value.trim();
@@ -853,7 +898,6 @@
         }
     }
 
-    // LÓGICA DE AGENDA: CARGA, EDICIÓN Y PERSISTENCIA LOCAL
     function guardarContacto() {
         const cia = document.getElementById('selectCompania').value;
         const rol = document.getElementById('agendaRol').value;
@@ -871,7 +915,6 @@
         let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
 
         if(editId) {
-            // Edición de contacto existente
             contactos = contactos.map(c => {
                 if(String(c.id) === String(editId)) {
                     return { id: c.id, compania: cia, rol: rol, nombre: nombre, tel1: tel1, tel2: tel2, mail: mail };
@@ -879,7 +922,6 @@
                 return c;
             });
         } else {
-            // Creación de nuevo contacto
             const nuevoContacto = {
                 id: Date.now(),
                 compania: cia,
@@ -913,7 +955,7 @@
             document.getElementById('btnGuardarContacto').innerText = "💾 Guardar Cambios";
             document.getElementById('btnCancelarEdicion').style.display = "block";
             
-            document.querySelector('.form-agenda').scrollIntoView({ behavior: 'smooth' });
+            document.querySelector('#sub-cias-general .form-agenda').scrollIntoView({ behavior: 'smooth' });
         }
     }
 
@@ -976,6 +1018,123 @@
                     </div>
                     <h4>👤 ${c.nombre} <small style="color:#0d6efd;">(${c.rol})</small></h4>
                     <p>📞 Tel 1: ${c.tel1 || 'N/A'}${c.tel2 ? ' | Tel 2: ' + c.tel2 : ''}</p>
+                    <p>✉️ Mail: ${c.mail || 'N/A'}</p>
+                </div>
+            `;
+        });
+        contenedor.innerHTML = html;
+    }
+
+    function guardarContactoVisRed() {
+        const seccion = document.getElementById('vrSeccion').value;
+        const area = document.getElementById('vrArea').value;
+        const nombre = document.getElementById('vrNombre').value.trim();
+        const telefono = document.getElementById('vrTelefono').value.trim();
+        const mail = document.getElementById('vrMail').value.trim();
+        const editId = document.getElementById('vrEditId').value;
+
+        if(!nombre) {
+            alert('Por favor, ingresá al menos el Nombre y Apellido.');
+            return;
+        }
+
+        let contactosVR = JSON.parse(localStorage.getItem('agenda_vis_red') || '[]');
+
+        if(editId) {
+            contactosVR = contactosVR.map(c => {
+                if(String(c.id) === String(editId)) {
+                    return { id: c.id, seccion: seccion, area: area, nombre: nombre, telefono: telefono, mail: mail };
+                }
+                return c;
+            });
+        } else {
+            const nuevoContactoVR = {
+                id: Date.now(),
+                seccion: seccion,
+                area: area,
+                nombre: nombre,
+                telefono: telefono,
+                mail: mail
+            };
+            contactosVR.push(nuevoContactoVR);
+        }
+
+        localStorage.setItem('agenda_vis_red', JSON.stringify(contactosVR));
+        cancelarEdicionVisRed();
+        renderizarContactosVisRed();
+    }
+
+    function cambiarFiltroVisRed() {
+        cancelarEdicionVisRed();
+        renderizarContactosVisRed();
+    }
+
+    function editarContactoVisRed(id) {
+        let contactosVR = JSON.parse(localStorage.getItem('agenda_vis_red') || '[]');
+        const c = contactosVR.find(item => String(item.id) === String(id));
+
+        if(c) {
+            document.getElementById('vrEditId').value = c.id;
+            document.getElementById('vrSeccion').value = c.seccion;
+            document.getElementById('vrArea').value = c.area;
+            document.getElementById('vrNombre').value = c.nombre;
+            document.getElementById('vrTelefono').value = c.telefono || '';
+            document.getElementById('vrMail').value = c.mail || '';
+
+            document.getElementById('vrFormTitulo').innerText = "✏️ EDITAR CONTACTO VISRED";
+            document.getElementById('vrBtnGuardar').innerText = "💾 Guardar Cambios";
+            document.getElementById('vrBtnCancelar').style.display = "block";
+            
+            document.querySelector('#sub-cias-visred .form-agenda').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function cancelarEdicionVisRed() {
+        document.getElementById('vrEditId').value = '';
+        document.getElementById('vrNombre').value = '';
+        document.getElementById('vrTelefono').value = '';
+        document.getElementById('vrMail').value = '';
+
+        document.getElementById('vrFormTitulo').innerText = "➕ CARGAR CONTACTO EN VISRED";
+        document.getElementById('vrBtnGuardar').innerText = "💾 Guardar Contacto VisRed";
+        document.getElementById('vrBtnCancelar').style.display = "none";
+    }
+
+    function borrarContactoVisRed(id) {
+        if(confirm('¿Seguro que deseas eliminar este contacto de VisRed?')) {
+            let contactosVR = JSON.parse(localStorage.getItem('agenda_vis_red') || '[]');
+            contactosVR = contactosVR.filter(c => String(c.id) !== String(id));
+            localStorage.setItem('agenda_vis_red', JSON.stringify(contactosVR));
+            renderizarContactosVisRed();
+        }
+    }
+
+    function renderizarContactosVisRed() {
+        const seccion = document.getElementById('vrSeccion').value;
+        const area = document.getElementById('vrArea').value;
+        const contenedor = document.getElementById('listaContactosVisRed');
+        const titulo = document.getElementById('vrTituloListado');
+        let contactosVR = JSON.parse(localStorage.getItem('agenda_vis_red') || '[]');
+
+        titulo.innerText = `Contactos VisRed: ${seccion} > ${area}`;
+
+        const contactosFiltrados = contactosVR.filter(c => c.seccion === seccion && c.area === area);
+
+        if(contactosFiltrados.length === 0) {
+            contenedor.innerHTML = '<p style="font-size: 13px; color: #888; font-style: italic; margin-top: 5px;">No hay contactos guardados en esta sección y área.</p>';
+            return;
+        }
+
+        let html = '';
+        contactosFiltrados.forEach(c => {
+            html += `
+                <div class="contact-card" style="border-left-color: #0d6efd;">
+                    <div class="card-actions">
+                        <button class="btn-edit" onclick="editarContactoVisRed('${c.id}')">✏️ Editar</button>
+                        <button class="btn-delete" onclick="borrarContactoVisRed('${c.id}')">Eliminar</button>
+                    </div>
+                    <h4>👤 ${c.nombre} <small style="color:#0d6efd;">(${c.seccion} - ${c.area})</small></h4>
+                    <p>📞 Teléfono: ${c.telefono || 'N/A'}</p>
                     <p>✉️ Mail: ${c.mail || 'N/A'}</p>
                 </div>
             `;
