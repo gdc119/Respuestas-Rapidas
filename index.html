@@ -306,6 +306,55 @@
             cursor: pointer;
         }
 
+        /* ESTILOS DE LA SECCIÓN INSPECCIONES */
+        .inspeccion-card {
+            background: #f8f9fa;
+            border: 1px solid var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .inspeccion-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .inspeccion-header h3 {
+            font-size: 15px;
+            color: #333;
+        }
+
+        .inspeccion-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        .inspeccion-controls input {
+            flex: 1;
+            font-size: 13px;
+            padding: 8px;
+        }
+
+        .btn-abrir-link {
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .btn-abrir-link:hover {
+            background-color: #0b5ed7;
+        }
+
         @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
         @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
     </style>
@@ -360,6 +409,7 @@
         <button class="tab-btn" onclick="switchTab('siniestros')">SINIESTROS</button>
         <button class="tab-btn" onclick="switchTab('comercial')">COMERCIAL</button>
         <button class="tab-btn" onclick="switchTab('datos-cias')">DATOS COMPAÑÍAS</button>
+        <button class="tab-btn" onclick="switchTab('inspecciones-tab')">INSPECCIONES</button>
     </div>
 
     <!-- PANEL: PAGOS -->
@@ -498,6 +548,59 @@
         </div>
     </div>
 
+    <!-- PANEL: INSPECCIONES -->
+    <div id="panel-inspecciones-tab" class="sub-panel">
+        <div class="section-title">Links de Formulario de Inspección</div>
+        
+        <!-- AUTO -->
+        <div class="inspeccion-card">
+            <div class="inspeccion-header">
+                <h3>🚗 Auto</h3>
+                <a id="btn-link-auto" href="#" target="_blank" class="btn-abrir-link">🔗 Abrir Link</a>
+            </div>
+            <div class="inspeccion-controls">
+                <input type="text" id="input-link-auto" placeholder="Pegá el link para Auto acá...">
+                <button onclick="guardarLinkInspeccion('auto')" class="btn-guardar" style="padding: 6px 12px; font-size: 13px;">💾 Guardar</button>
+            </div>
+        </div>
+
+        <!-- MOTO -->
+        <div class="inspeccion-card">
+            <div class="inspeccion-header">
+                <h3>🏍️ Moto</h3>
+                <a id="btn-link-moto" href="#" target="_blank" class="btn-abrir-link">🔗 Abrir Link</a>
+            </div>
+            <div class="inspeccion-controls">
+                <input type="text" id="input-link-moto" placeholder="Pegá el link para Moto acá...">
+                <button onclick="guardarLinkInspeccion('moto')" class="btn-guardar" style="padding: 6px 12px; font-size: 13px;">💾 Guardar</button>
+            </div>
+        </div>
+
+        <!-- BICICLETA -->
+        <div class="inspeccion-card">
+            <div class="inspeccion-header">
+                <h3>🚲 Bicicleta</h3>
+                <a id="btn-link-bici" href="#" target="_blank" class="btn-abrir-link">🔗 Abrir Link</a>
+            </div>
+            <div class="inspeccion-controls">
+                <input type="text" id="input-link-bici" placeholder="Pegá el link para Bicicleta acá...">
+                <button onclick="guardarLinkInspeccion('bici')" class="btn-guardar" style="padding: 6px 12px; font-size: 13px;">💾 Guardar</button>
+            </div>
+        </div>
+
+        <!-- OTROS -->
+        <div class="inspeccion-card">
+            <div class="inspeccion-header">
+                <h3>📋 Otros</h3>
+                <a id="btn-link-otros" href="#" target="_blank" class="btn-abrir-link">🔗 Abrir Link</a>
+            </div>
+            <div class="inspeccion-controls">
+                <input type="text" id="input-link-otros" placeholder="Pegá el link de Otros acá...">
+                <button onclick="guardarLinkInspeccion('otros')" class="btn-guardar" style="padding: 6px 12px; font-size: 13px;">💾 Guardar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- SECCIÓN INFERIOR: ACCIONES Y VISTA PREVIA -->
     <div class="output-container">
         <div class="section-title">Texto Generado Automáticamente</div>
@@ -554,6 +657,10 @@
     let opcionActual = '';
     let filtroAreaActual = 'Todos';
 
+    document.addEventListener('DOMContentLoaded', () => {
+        cargarLinksInspeccion();
+    });
+
     function switchTab(tabId) {
         document.querySelectorAll('.tab-btn:not(.sub-tab)').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.container > .sub-panel').forEach(panel => panel.classList.remove('active'));
@@ -561,7 +668,7 @@
         event.target.classList.add('active');
         document.getElementById('panel-' + tabId).classList.add('active');
         
-        if(tabId === 'siniestros') {
+        if(tabId === 'siniestros' || tabId === 'inspecciones-tab') {
             document.getElementById('section-companias-global').style.display = 'none';
         } else {
             document.getElementById('section-companias-global').style.display = 'block';
@@ -704,6 +811,46 @@
         }
 
         document.getElementById('outputTexto').value = textoFinal;
+    }
+
+    // LÓGICA DE INSPECCIONES
+    function guardarLinkInspeccion(tipo) {
+        const input = document.getElementById(`input-link-${tipo}`);
+        const url = input.value.trim();
+        
+        let links = JSON.parse(localStorage.getItem('links_inspeccion') || '{}');
+        links[tipo] = url;
+        localStorage.setItem('links_inspeccion', JSON.stringify(links));
+
+        actualizarBotonLink(tipo, url);
+        alert('Link de inspección guardado correctamente.');
+    }
+
+    function cargarLinksInspeccion() {
+        let links = JSON.parse(localStorage.getItem('links_inspeccion') || '{}');
+        const tipos = ['auto', 'moto', 'bici', 'otros'];
+
+        tipos.forEach(tipo => {
+            const url = links[tipo] || '';
+            const input = document.getElementById(`input-link-${tipo}`);
+            if (input) input.value = url;
+            actualizarBotonLink(tipo, url);
+        });
+    }
+
+    function actualizarBotonLink(tipo, url) {
+        const btn = document.getElementById(`btn-link-${tipo}`);
+        if (btn) {
+            if (url) {
+                btn.href = url.startsWith('http') ? url : 'https://' + url;
+                btn.style.opacity = "1";
+                btn.style.pointerEvents = "auto";
+            } else {
+                btn.href = "#";
+                btn.style.opacity = "0.5";
+                btn.style.pointerEvents = "none";
+            }
+        }
     }
 
     // LÓGICA DE AGENDA: CARGA, EDICIÓN Y PERSISTENCIA LOCAL
