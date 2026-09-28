@@ -450,8 +450,9 @@
                 <label style="font-size: 11px; color: #6c757d;">Rol / Puesto</label>
                 <select id="agendaRol">
                     <option value="Gerente">Gerente</option>
-                    <option value="Ejecutivo Comercial">Ejecutivo Comercial</option>
-                    <option value="Administración Siniestro">Administración Siniestro</option>
+                    <option value="Ejecutivo Comercial">Ejecutivo comercial</option>
+                    <option value="Administración">Administración</option>
+                    <option value="Siniestros">Siniestros</option>
                     <option value="Peritos">Peritos</option>
                 </select>
             </div>
@@ -501,7 +502,6 @@
 <div id="toast" class="toast">¡Mensaje copiado con éxito! 👍</div>
 
 <script>
-    // BASE DE DATOS ESTRUCTURADA
     const BaseDatos = {
         cuentas: {
             "Sancor": "Datos de Cuenta SANCOR:\nBanco: Del Sol\nCBU: 720169720000000000000\nAlias: SANCORSEGUROS.BDS.AR",
@@ -703,6 +703,12 @@
             return;
         }
 
+        // Asignación de área según el rol
+        let areaPertenece = 'Comercial';
+        if (rol === 'Siniestros' || rol === 'Peritos') {
+            areaPertenece = 'Siniestros';
+        }
+
         const nuevoContacto = {
             id: Date.now(),
             compania: cia,
@@ -711,7 +717,7 @@
             tel1: tel1,
             tel2: tel2,
             mail: mail,
-            area: (rol === 'Gerente' || rol === 'Ejecutivo Comercial') ? 'Comercial' : 'Siniestros'
+            area: areaPertenece
         };
 
         let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
@@ -749,7 +755,7 @@
 
         let contactosFiltrados = contactos.filter(c => c.compania === cia);
         if(filtroAreaActual !== 'Todos') {
-            contactosFiltrados = contactosFiltrados.filter(c => c.area === filtroAreaActual || filtroAreaActual === 'Todos');
+            contactosFiltrados = contactosFiltrados.filter(c => c.area === filtroAreaActual);
         }
 
         if(contactosFiltrados.length === 0) {
