@@ -474,25 +474,18 @@
     <!-- PANEL: DATOS COMPAÑÍAS -->
     <div id="panel-datos-cias" class="sub-panel">
         <div class="nav-tabs" style="border-bottom: 1px solid var(--border-color); margin-bottom: 15px;">
-            <button class="tab-btn sub-cias-tab active" id="stab-cias-general" onclick="switchSubCiasTab(event, 'general')">Cía Comercial</button>
+            <button class="tab-btn sub-cias-tab active" id="stab-cias-general" onclick="switchSubCiasTab(event, 'general')">Datos Compañías</button>
             <button class="tab-btn sub-cias-tab" id="stab-cias-visred" onclick="switchSubCiasTab(event, 'visred')">VisRed</button>
+            <button class="tab-btn sub-cias-tab" id="stab-cias-todos" onclick="switchSubCiasTab(event, 'todos')">Ver todos los datos</button>
         </div>
 
-        <!-- SUB-PANEL: CÍA COMERCIAL -->
+        <!-- SUB-PANEL: DATOS COMPAÑÍAS -->
         <div id="sub-cias-general" class="sub-panel active">
             <div class="section-title">Servicios e Información Dinámica</div>
             <div class="grid-buttons" style="margin-bottom: 15px;">
                 <button onclick="generarMensaje('cia_grua')" id="btn-cia_grua" style="grid-column: 1 / -1; background-color: #fff8eb; font-weight: bold;">📞 COORDINAR GRÚA</button>
             </div>
             
-            <div style="border-top: 1px solid var(--border-color); padding-top: 10px;">
-                <div style="font-size: 12px; font-weight: bold; color:#6c757d; margin-bottom: 8px;">MÓDULOS DE FILTRADO:</div>
-                <div class="grid-buttons">
-                    <button onclick="filtrarAgenda('Comercial')" style="background-color: #e7f5ff;">🏢 Cía Comercial</button>
-                    <button onclick="filtrarAgenda('Todos')" style="background-color: #f1f3f5;">🌐 Ver Todos</button>
-                </div>
-            </div>
-
             <!-- FORMULARIO AGENDA DE CONTACTOS GENERAL -->
             <div class="form-agenda">
                 <div class="full-width" id="formAgendaTitulo" style="font-size: 13px; font-weight: bold; color: #495057;">➕ CARGAR CONTACTO DE COMPAÑÍA</div>
@@ -580,6 +573,15 @@
             <div style="margin-top: 15px;">
                 <div class="section-title" id="vrTituloListado">Contactos VisRed</div>
                 <div id="listaContactosVisRed"></div>
+            </div>
+        </div>
+
+        <!-- SUB-PANEL: VER TODOS LOS DATOS -->
+        <div id="sub-cias-todos" class="sub-panel">
+            <div class="section-title">Vista General de Todos los Contactos</div>
+            <div style="margin-top: 15px;">
+                <div class="section-title">Contactos Guardados (Todas las Compañías)</div>
+                <div id="listaContactosTodos"></div>
             </div>
         </div>
     </div>
@@ -687,7 +689,6 @@
     };
 
     let opcionActual = '';
-    let filtroAreaActual = 'Todos';
 
     document.addEventListener('DOMContentLoaded', () => {
         cargarLinksInspeccion();
@@ -708,6 +709,7 @@
         if(tabId === 'datos-cias') {
             renderizarContactos();
             renderizarContactosVisRed();
+            renderizarTodosContactos();
         }
         clearActiveButtons();
     }
@@ -730,11 +732,13 @@
         
         document.getElementById('sub-cias-general').classList.remove('active');
         document.getElementById('sub-cias-visred').classList.remove('active');
+        document.getElementById('sub-cias-todos').classList.remove('active');
         
         document.getElementById('sub-cias-' + subCiasId).classList.add('active');
 
         if(subCiasId === 'general') renderizarContactos();
         if(subCiasId === 'visred') renderizarContactosVisRed();
+        if(subCiasId === 'todos') renderizarTodosContactos();
     }
 
     function clearActiveButtons() {
@@ -937,6 +941,7 @@
         localStorage.setItem('agenda_seguros', JSON.stringify(contactos));
         cancelarEdicion();
         renderizarContactos();
+        renderizarTodosContactos();
     }
 
     function editarContacto(id) {
@@ -977,12 +982,8 @@
             contactos = contactos.filter(c => String(c.id) !== String(id));
             localStorage.setItem('agenda_seguros', JSON.stringify(contactos));
             renderizarContactos();
+            renderizarTodosContactos();
         }
-    }
-
-    function filtrarAgenda(filtro) {
-        filtroAreaActual = filtro;
-        renderizarContactos();
     }
 
     function renderizarContactos() {
@@ -991,20 +992,12 @@
         const titulo = document.getElementById('tituloAgendaListado');
         let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
 
-        titulo.innerText = `Contactos - ${cia} (${filtroAreaActual})`;
+        titulo.innerText = `Contactos - ${cia}`;
 
         let contactosFiltrados = contactos.filter(c => c.compania === cia);
 
-        if(filtroAreaActual !== 'Todos') {
-            if(filtroAreaActual === 'Comercial') {
-                contactosFiltrados = contactosFiltrados.filter(c => c.rol === 'Gerente' || c.rol === 'Ejecutivo Comercial');
-            } else {
-                contactosFiltrados = contactosFiltrados.filter(c => c.rol === filtroAreaActual);
-            }
-        }
-
         if(contactosFiltrados.length === 0) {
-            contenedor.innerHTML = '<p style="font-size: 13px; color: #888; font-style: italic; margin-top: 5px;">No hay contactos guardados para esta selección.</p>';
+            contenedor.innerHTML = '<p style="font-size: 13px; color: #888; font-style: italic; margin-top: 5px;">No hay contactos guardados para esta compañía.</p>';
             return;
         }
 
@@ -1017,6 +1010,32 @@
                         <button class="btn-delete" onclick="borrarContacto('${c.id}')">Eliminar</button>
                     </div>
                     <h4>👤 ${c.nombre} <small style="color:#0d6efd;">(${c.rol})</small></h4>
+                    <p>📞 Tel 1: ${c.tel1 || 'N/A'}${c.tel2 ? ' | Tel 2: ' + c.tel2 : ''}</p>
+                    <p>✉️ Mail: ${c.mail || 'N/A'}</p>
+                </div>
+            `;
+        });
+        contenedor.innerHTML = html;
+    }
+
+    function renderizarTodosContactos() {
+        const contenedor = document.getElementById('listaContactosTodos');
+        let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
+
+        if(contactos.length === 0) {
+            contenedor.innerHTML = '<p style="font-size: 13px; color: #888; font-style: italic; margin-top: 5px;">No hay contactos guardados en ninguna compañía.</p>';
+            return;
+        }
+
+        let html = '';
+        contactos.forEach(c => {
+            html += `
+                <div class="contact-card">
+                    <div class="card-actions">
+                        <button class="btn-edit" onclick="editarContacto('${c.id}')">✏️ Editar</button>
+                        <button class="btn-delete" onclick="borrarContacto('${c.id}')">Eliminar</button>
+                    </div>
+                    <h4>👤 ${c.nombre} <small style="color:#0d6efd;">[${c.compania}] - (${c.rol})</small></h4>
                     <p>📞 Tel 1: ${c.tel1 || 'N/A'}${c.tel2 ? ' | Tel 2: ' + c.tel2 : ''}</p>
                     <p>✉️ Mail: ${c.mail || 'N/A'}</p>
                 </div>
