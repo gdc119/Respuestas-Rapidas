@@ -436,9 +436,8 @@
             <div class="grid-buttons">
                 <button onclick="filtrarAgenda('Comercial')" style="background-color: #e7f5ff;">🏢 Cía Comercial</button>
                 <button onclick="filtrarAgenda('Siniestros')" style="background-color: #e7f5ff;">📂 Cía Siniestros</button>
-                <button onclick="filtrarAgenda('Vida')" style="background-color: #e7f5ff;">🧘 VIS: Vida</button>
-                <button onclick="filtrarAgenda('Generales')" style="background-color: #e7f5ff;">🏠 VIS: Generales</button>
-                <button onclick="filtrarAgenda('ART')" style="background-color: #e7f5ff;">💼 VIS: ART</button>
+                <button onclick="filtrarAgenda('Peritos')" style="background-color: #e7f5ff;">🔍 Peritos</button>
+                <button onclick="filtrarAgenda('Administración')" style="background-color: #e7f5ff;">📄 Administración</button>
                 <button onclick="filtrarAgenda('Todos')" style="background-color: #f1f3f5;">🌐 Ver Todos</button>
             </div>
         </div>
@@ -689,7 +688,7 @@
         document.getElementById('outputTexto').value = textoFinal;
     }
 
-    // LÓGICA DE AGENDA / PERSISTENCIA LOCAL
+    // LÓGICA DE AGENDA / PERSISTENCIA LOCAL CORREGIDA
     function guardarContacto() {
         const cia = document.getElementById('selectCompania').value;
         const rol = document.getElementById('agendaRol').value;
@@ -703,12 +702,6 @@
             return;
         }
 
-        // Asignación de área según el rol
-        let areaPertenece = 'Comercial';
-        if (rol === 'Siniestros' || rol === 'Peritos') {
-            areaPertenece = 'Siniestros';
-        }
-
         const nuevoContacto = {
             id: Date.now(),
             compania: cia,
@@ -716,8 +709,7 @@
             nombre: nombre,
             tel1: tel1,
             tel2: tel2,
-            mail: mail,
-            area: areaPertenece
+            mail: mail
         };
 
         let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
@@ -740,8 +732,8 @@
         renderizarContactos();
     }
 
-    function filtrarAgenda(area) {
-        filtroAreaActual = area;
+    function filtrarAgenda(filtro) {
+        filtroAreaActual = filtro;
         renderizarContactos();
     }
 
@@ -754,8 +746,13 @@
         titulo.innerText = `Contactos - ${cia} (${filtroAreaActual})`;
 
         let contactosFiltrados = contactos.filter(c => c.compania === cia);
+
         if(filtroAreaActual !== 'Todos') {
-            contactosFiltrados = contactosFiltrados.filter(c => c.area === filtroAreaActual);
+            if(filtroAreaActual === 'Comercial') {
+                contactosFiltrados = contactosFiltrados.filter(c => c.rol === 'Gerente' || c.rol === 'Ejecutivo Comercial');
+            } else {
+                contactosFiltrados = contactosFiltrados.filter(c => c.rol === filtroAreaActual);
+            }
         }
 
         if(contactosFiltrados.length === 0) {
