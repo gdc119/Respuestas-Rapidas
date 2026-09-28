@@ -245,7 +245,7 @@
         }
         .tr-field input { padding: 5px; width: 80px; }
 
-        /* ESTILOS PARA LA AGENDA DE CONTACTOS */
+        /* ESTILOS PARA LA AGENDA DE CONTACTOS CON BOTÓN EDITAR */
         .form-agenda {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -278,14 +278,29 @@
         }
         .contact-card h4 { font-size: 14px; color: #333; }
         .contact-card p { font-size: 13px; color: #555; margin-top: 2px; }
-        .btn-delete {
+        
+        .card-actions {
             position: absolute;
             top: 10px;
             right: 10px;
+            display: flex;
+            gap: 5px;
+        }
+        .btn-edit {
+            background: #ffc107;
+            color: #000;
+            border: none;
+            padding: 3px 8px;
+            font-size: 11px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .btn-delete {
             background: #dc3545;
             color: white;
             border: none;
-            padding: 2px 8px;
+            padding: 3px 8px;
             font-size: 11px;
             border-radius: 4px;
             cursor: pointer;
@@ -444,7 +459,8 @@
 
         <!-- FORMULARIO AGENDA DE CONTACTOS -->
         <div class="form-agenda">
-            <div class="full-width" style="font-size: 13px; font-weight: bold; color: #495057;">➕ CARGAR CONTACTO DE COMPAÑÍA</div>
+            <div class="full-width" id="formAgendaTitulo" style="font-size: 13px; font-weight: bold; color: #495057;">➕ CARGAR CONTACTO DE COMPAÑÍA</div>
+            <input type="hidden" id="agendaEditId" value="">
             <div>
                 <label style="font-size: 11px; color: #6c757d;">Rol / Puesto</label>
                 <select id="agendaRol">
@@ -471,7 +487,8 @@
                 <label style="font-size: 11px; color: #6c757d;">Correo Electrónico</label>
                 <input type="email" id="agendaMail" placeholder="ejemplo@compania.com">
             </div>
-            <button class="btn-guardar full-width" onclick="guardarContacto()">💾 Cargar Contacto</button>
+            <button class="btn-guardar full-width" id="btnGuardarContacto" onclick="guardarContacto()">💾 Cargar Contacto</button>
+            <button class="full-width" id="btnCancelarEdicion" onclick="cancelarEdicion()" style="display:none; background:#6c757d; color:white; border:none; margin-top:-5px;">Cancelar Edición</button>
         </div>
 
         <!-- LISTADO DE CONTACTOS GUARDADOS -->
@@ -576,6 +593,7 @@
 
     function cambiarCompaniaGlobal() { 
         if(opcionActual) { generarMensaje(opcionActual); }
+        cancelarEdicion();
         renderizarContactos();
     }
     
@@ -688,7 +706,7 @@
         document.getElementById('outputTexto').value = textoFinal;
     }
 
-    // LÓGICA DE AGENDA / PERSISTENCIA LOCAL CORREGIDA
+    // LÓGICA DE AGENDA: CARGA, EDICIÓN Y PERSISTENCIA LOCAL
     function guardarContacto() {
         const cia = document.getElementById('selectCompania').value;
         const rol = document.getElementById('agendaRol').value;
@@ -696,40 +714,81 @@
         const tel1 = document.getElementById('agendaTel1').value.trim();
         const tel2 = document.getElementById('agendaTel2').value.trim();
         const mail = document.getElementById('agendaMail').value.trim();
+        const editId = document.getElementById('agendaEditId').value;
 
         if(!nombre) {
             alert('Por favor, ingresa al menos el Nombre y Apellido.');
             return;
         }
 
-        const nuevoContacto = {
-            id: Date.now(),
-            compania: cia,
-            rol: rol,
-            nombre: nombre,
-            tel1: tel1,
-            tel2: tel2,
-            mail: mail
-        };
-
         let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
-        contactos.push(nuevoContacto);
-        localStorage.setItem('agenda_seguros', JSON.stringify(contactos));
 
-        // Limpiar campos
+        if(editId) {
+            // Edición de contacto existente
+            contactos = contactos.map(c => {
+                if(String(c.id) === String(editId)) {
+                    return { id: c.id, compania: cia, rol: rol, nombre: nombre, tel1: tel1, tel2: tel2, mail: mail };
+                }
+                return c;
+            });
+        } else {
+            // Creación de nuevo contacto
+            const nuevoContacto = {
+                id: Date.now(),
+                compania: cia,
+                rol: rol,
+                nombre: nombre,
+                tel1: tel1,
+                tel2: tel2,
+                mail: mail
+            };
+            contactos.push(nuevoContacto);
+        }
+
+        localStorage.setItem('agenda_seguros', JSON.stringify(contactos));
+        cancelarEdicion();
+        renderizarContactos();
+    }
+
+    function editarContacto(id) {
+        let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
+        const c = contactos.find(item => String(item.id) === String(id));
+
+        if(c) {
+            document.getElementById('agendaEditId').value = c.id;
+            document.getElementById('agendaRol').value = c.rol;
+            document.getElementById('agendaNombre').value = c.nombre;
+            document.getElementById('agendaTel1').value = c.tel1 || '';
+            document.getElementById('agendaTel2').value = c.tel2 || '';
+            document.getElementById('agendaMail').value = c.mail || '';
+
+            document.getElementById('formAgendaTitulo').innerText = "✏️ EDITAR CONTACTO DE COMPAÑÍA";
+            document.getElementById('btnGuardarContacto').innerText = "💾 Guardar Cambios";
+            document.getElementById('btnCancelarEdicion').style.display = "block";
+            
+            document.querySelector('.form-agenda').scrollIntoView({ behavior: 'smooth' });
+        }
+    }
+
+    function cancelarEdicion() {
+        document.getElementById('agendaEditId').value = '';
         document.getElementById('agendaNombre').value = '';
         document.getElementById('agendaTel1').value = '';
         document.getElementById('agendaTel2').value = '';
         document.getElementById('agendaMail').value = '';
 
-        renderizarContactos();
+        document.getElementById('formAgendaTitulo').innerText = "➕ CARGAR CONTACTO DE COMPAÑÍA";
+        document.getElementById('btnGuardarContacto').innerText = "💾 Cargar Contacto";
+        document.getElementById('btnCancelarEdicion').style.display = "none";
     }
 
     function borrarContacto(id) {
-        let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
-        contactos = contactos.filter(c => c.id !== id);
-        localStorage.setItem('agenda_seguros', JSON.stringify(contactos));
-        renderizarContactos();
+        if(confirm('¿Seguro que deseas eliminar este contacto?')) {
+            let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
+            contactos = contactos.filter(c => String(c.id) !== String(id));
+            localStorage.setItem('agenda_seguros', JSON.stringify(contactos));
+            renderizarContactos();
+        }
     }
 
     function filtrarAgenda(filtro) {
@@ -764,7 +823,10 @@
         contactosFiltrados.forEach(c => {
             html += `
                 <div class="contact-card">
-                    <button class="btn-delete" onclick="borrarContacto(${c.id})">Eliminar</button>
+                    <div class="card-actions">
+                        <button class="btn-edit" onclick="editarContacto('${c.id}')">✏️ Editar</button>
+                        <button class="btn-delete" onclick="borrarContacto('${c.id}')">Eliminar</button>
+                    </div>
                     <h4>👤 ${c.nombre} <small style="color:#0d6efd;">(${c.rol})</small></h4>
                     <p>📞 Tel 1: ${c.tel1 || 'N/A'}${c.tel2 ? ' | Tel 2: ' + c.tel2 : ''}</p>
                     <p>✉️ Mail: ${c.mail || 'N/A'}</p>
