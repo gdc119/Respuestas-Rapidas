@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente de Mensajes - Seguros</title>
+    <style>
+        :root {
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-color: #212529;
+            --primary-color: #0d6efd;
+            --accent-color: #198754;
+            --whatsapp-color: #25d366;
+            --whatsapp-hover: #20ba5a;
+            --border-color: #dee2e6;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--card-bg);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #343a40;
+            font-weight: 600;
+        }
+
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+            color: #6c757d;
+            margin-bottom: 10px;
+            letter-spacing: 0.5px;
+        }
+
+        .input-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 15px;
+        }
+
+        @media (max-width: 768px) {
+            .input-group { grid-template-columns: 1fr; }
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 15px;
+            outline: none;
+            background-color: #fdfdfd;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            background-color: #fff;
+        }
+
+        .grid-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 10px;
+            margin-top: 5px;
+        }
+
+        button {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            background-color: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s;
+            color: #495057;
+        }
+
+        button:hover {
+            background-color: #e9ecef;
+            border-color: #adb5bd;
+        }
+
+        button.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .nav-tabs {
+            display: flex;
+            gap: 5px;
+            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .tab-btn, .tab-btn:hover {
+            border: none !important;
+            background: none !important;
+            padding: 10px 15px;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+            white-space: nowrap;
+            color: #6c757d;
+        }
+
+        .tab-btn.active, .tab-btn.active:hover {
+            background: none !important;
+            color: var(--primary-color) !important;
+            border-bottom: 3px solid var(--primary-color) !important;
+            border-radius: 0;
+        }
+
+        .sub-panel {
+            display: none;
+        }
+
+        .sub-panel.active {
+            display: block;
+        }
+
+        .output-container {
+            margin-top: 25px;
+        }
+
+        textarea {
+            height: 150px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+            background-color: #f8f9fa;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        @media (max-width: 500px) {
+            .action-buttons { grid-template-columns: 1fr; }
+        }
+
+        .btn-copy {
+            background-color: var(--accent-color);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+        }
+
+        .btn-copy:hover {
+            background-color: #146c43;
+        }
+
+        .btn-whatsapp {
+            background-color: var(--whatsapp-color);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            padding: 12px;
+            border: none;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-whatsapp:hover {
+            background-color: var(--whatsapp-hover);
+        }
+
+        .toast {
+            visibility: hidden;
+            min-width: 200px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 12px;
+            position: fixed;
+            z-index: 1;
+            bottom: 30px;
+            font-size: 14px;
+        }
+
+        .toast.show {
+            visibility: visible;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        .tr-inputs {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .tr-field {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 13px;
+        }
+        .tr-field input { padding: 5px; width: 80px; }
+
+        /* ESTILOS PARA LA AGENDA DE CONTACTOS */
+        .form-agenda {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            background: #f1f3f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+        }
+        .form-agenda .full-width { grid-column: 1 / -1; }
+        .btn-guardar {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-guardar:hover { background-color: #0b5ed7; }
+        
+        .contact-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-left: 4px solid var(--primary-color);
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 10px;
+            position: relative;
+        }
+        .contact-card h4 { font-size: 14px; color: #333; }
+        .contact-card p { font-size: 13px; color: #555; margin-top: 2px; }
+        .btn-delete {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 2px 8px;
+            font-size: 11px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        @keyframes fadein { from {bottom: 0; opacity: 0;} to {bottom: 30px; opacity: 1;} }
+        @keyframes fadeout { from {bottom: 30px; opacity: 1;} to {bottom: 0; opacity: 0;} }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Asistente de Mensajes Automáticos</h1>
+
+    <!-- SECCIÓN: DATOS ASEGURADO -->
+    <div class="section">
+        <div class="section-title">Datos del Asegurado</div>
+        <div class="input-group">
+            <div>
+                <label style="font-size: 12px; color: #6c757d;">Nombre del Cliente</label>
+                <input type="text" id="nombreCliente" placeholder="Ej: Juan Carlos" oninput="actualizarMensaje()">
+            </div>
+            <div>
+                <label style="font-size: 12px; color: #6c757d;">Celular (Ej: 3515918832)</label>
+                <input type="text" id="celularCliente" placeholder="Sin 0 ni 15" oninput="actualizarMensaje()">
+            </div>
+            <div>
+                <label style="font-size: 12px; color: #6c757d;">Modelo / Vehículo</label>
+                <input type="text" id="modeloVehiculo" placeholder="Ej: Corolla 2018" oninput="actualizarMensaje()">
+            </div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN: SELECCIÓN DE COMPAÑÍA -->
+    <div class="section" id="section-companias-global">
+        <div class="section-title">Compañía Seleccionada</div>
+        <select id="selectCompania" onchange="cambiarCompaniaGlobal()">
+            <option value="Sancor">Sancor</option>
+            <option value="Rio Uruguay">Rio Uruguay</option>
+            <option value="Mapfre">Mapfre</option>
+            <option value="Nacion Seguros">Nación Seguros</option>
+            <option value="El Norte Seguros">El Norte Seguros</option>
+            <option value="Mercantil Andina">Mercantil Andina</option>
+            <option value="San Cristobal">San Cristóbal</option>
+            <option value="Galicia">Galicia</option>
+            <option value="Federacion Patronal">Federación Patronal</option>
+            <option value="Allianz">Allianz</option>
+            <option value="Experta">Experta</option>
+            <option value="Triunfo Seguros">Triunfo Seguros</option>
+            <option value="Zurich">Zurich</option>
+        </select>
+    </div>
+
+    <!-- PESTAÑAS PRINCIPALES DE MENÚ -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="switchTab('pagos')">PAGOS</button>
+        <button class="tab-btn" onclick="switchTab('siniestros')">SINIESTROS</button>
+        <button class="tab-btn" onclick="switchTab('comercial')">COMERCIAL</button>
+        <button class="tab-btn" onclick="switchTab('datos-cias')">DATOS COMPAÑÍAS</button>
+    </div>
+
+    <!-- PANEL: PAGOS -->
+    <div id="panel-pagos" class="sub-panel active">
+        <div class="section-title">Rechazos de Pago</div>
+        <div class="grid-buttons">
+            <button onclick="generarMensaje('pago_cbu')" id="btn-pago_cbu">CBU COMPAÑÍA</button>
+            <button onclick="generarMensaje('pago_link')" id="btn-pago_link">LINK PAGO</button>
+            <button onclick="generarMensaje('pago_cupon')" id="btn-pago_cupon">CUPON PAGO</button>
+        </div>
+    </div>
+
+    <!-- PANEL: SINIESTROS -->
+    <div id="panel-siniestros" class="sub-panel">
+        <div class="section-title">Gestión de Siniestros</div>
+        <div class="grid-buttons">
+            <button onclick="generarMensaje('sin_carga')" id="btn-sin_carga">Carga Siniestro</button>
+            <button onclick="generarMensaje('sin_reclamo')" id="btn-sin_reclamo">Reclamo Cía 3ro</button>
+            <button onclick="generarMensaje('sin_ok')" id="btn-sin_ok">Denuncia OK</button>
+            <button onclick="generarMensaje('sin_motos')" id="btn-sin_motos">Stro Motos / Lesiones</button>
+            <button onclick="generarMensaje('sin_granizo')" id="btn-sin_granizo">Granizo</button>
+        </div>
+    </div>
+
+    <!-- PANEL: COMERCIAL -->
+    <div id="panel-comercial" class="sub-panel">
+        <div class="nav-tabs" style="border-bottom: 1px solid var(--border-color); margin-bottom: 10px;">
+            <button class="tab-btn sub-tab active" id="stab-cotiz" onclick="switchSubTab('cotiz')">Cotización</button>
+            <button class="tab-btn sub-tab" id="stab-seguim" onclick="switchSubTab('seguim')">Seguimientos</button>
+            <button class="tab-btn sub-tab" id="stab-inspec" onclick="switchSubTab('inspec')">Inspección</button>
+        </div>
+
+        <!-- Sub-panel: Cotizaciones -->
+        <div id="sub-com-cotiz" class="sub-panel active">
+            <div id="tr-valores-box" style="display:none; padding: 10px; border: 1px dashed #ccc; margin-bottom: 10px; border-radius: 6px;">
+                <div style="font-size: 11px; font-weight: bold; margin-bottom: 5px; color: #6c757d;">COSTOS FRANQUICIAS TODO RIESGO:</div>
+                <div class="tr-inputs">
+                    <div class="tr-field">2%: $<input type="text" id="tr2" value="0" oninput="actualizarTR()"></div>
+                    <div class="tr-field">3%: $<input type="text" id="tr3" value="0" oninput="actualizarTR()"></div>
+                    <div class="tr-field">4%: $<input type="text" id="tr4" value="0" oninput="actualizarTR()"></div>
+                    <div class="tr-field">5%: $<input type="text" id="tr5" value="0" oninput="actualizarTR()"></div>
+                    <div class="tr-field">7%: $<input type="text" id="tr7" value="0" oninput="actualizarTR()"></div>
+                    <div class="tr-field">8%: $<input type="text" id="tr8" value="0" oninput="actualizarTR()"></div>
+                    <div class="tr-field">10%: $<input type="text" id="tr10" value="0" oninput="actualizarTR()"></div>
+                </div>
+            </div>
+            <div class="grid-buttons">
+                <button onclick="generarMensaje('cober_a_sg')" id="btn-cober_a_sg">🚫 A Sin Grúa</button>
+                <button onclick="generarMensaje('cober_a_cg')" id="btn-cober_a_cg">🚚 A Con Grúa</button>
+                <button onclick="generarMensaje('cober_b1')" id="btn-cober_b1">🛡️ B1</button>
+                <button onclick="generarMensaje('cober_b')" id="btn-cober_b">💥 B</button>
+                <button onclick="generarMensaje('cober_c1')" id="btn-cober_c1">🔒 C1</button>
+                <button onclick="generarMensaje('cober_c')" id="btn-cober_c">💎 C</button>
+                <button onclick="generarMensaje('cober_expl')" id="btn-cober_expl">✨ Experta L</button>
+                <button onclick="generarMensaje('cober_expv')" id="btn-cober_expv">⚡ Exp. Vidrios</button>
+                <button onclick="generarMensaje('cober_sigma')" id="btn-cober_sigma">🌪️ Sigma/Granizo</button>
+                <button onclick="generarMensaje('cober_tr')" id="btn-cober_tr">👑 Todo Riesgo</button>
+                <button onclick="generarMensaje('cober_max3')" id="btn-cober_max3">🌟 MAX3 Sancor</button>
+            </div>
+        </div>
+
+        <!-- Sub-panel: Seguimientos -->
+        <div id="sub-com-seguim" class="sub-panel">
+            <div class="grid-buttons">
+                <button onclick="generarMensaje('seg_2')" id="btn-seg_2">📩 2do Contacto</button>
+                <button onclick="generarMensaje('seg_3')" id="btn-seg_3">📩 3er Contacto</button>
+            </div>
+        </div>
+
+        <!-- Sub-panel: Inspecciones -->
+        <div id="sub-com-inspec" class="sub-panel">
+            <div class="grid-buttons">
+                <button onclick="generarMensaje('insp_link')" id="btn-insp_link">🔗 Link Sistema</button>
+                <button onclick="generarMensaje('insp_comun')" id="btn-insp_comun">📸 Fotos Comunes</button>
+                <button onclick="generarMensaje('insp_allianz')" id="btn-insp_allianz">🌐 Link Allianz</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANEL: DATOS COMPAÑÍAS -->
+    <div id="panel-datos-cias" class="sub-panel">
+        <div class="section-title">Servicios e Información Dinámica</div>
+        <div class="grid-buttons" style="margin-bottom: 15px;">
+            <button onclick="generarMensaje('cia_grua')" id="btn-cia_grua" style="grid-column: 1 / -1; background-color: #fff8eb; font-weight: bold;">📞 COORDINAR GRÚA</button>
+        </div>
+        
+        <div style="border-top: 1px solid var(--border-color); padding-top: 10px;">
+            <div style="font-size: 12px; font-weight: bold; color:#6c757d; margin-bottom: 8px;">MÓDULOS DE CARGA DE AGENDA:</div>
+            <div class="grid-buttons">
+                <button onclick="filtrarAgenda('Comercial')" style="background-color: #e7f5ff;">🏢 Cía Comercial</button>
+                <button onclick="filtrarAgenda('Siniestros')" style="background-color: #e7f5ff;">📂 Cía Siniestros</button>
+                <button onclick="filtrarAgenda('Vida')" style="background-color: #e7f5ff;">🧘 VIS: Vida</button>
+                <button onclick="filtrarAgenda('Generales')" style="background-color: #e7f5ff;">🏠 VIS: Generales</button>
+                <button onclick="filtrarAgenda('ART')" style="background-color: #e7f5ff;">💼 VIS: ART</button>
+                <button onclick="filtrarAgenda('Todos')" style="background-color: #f1f3f5;">🌐 Ver Todos</button>
+            </div>
+        </div>
+
+        <!-- FORMULARIO AGENDA DE CONTACTOS -->
+        <div class="form-agenda">
+            <div class="full-width" style="font-size: 13px; font-weight: bold; color: #495057;">➕ CARGAR CONTACTO DE COMPAÑÍA</div>
+            <div>
+                <label style="font-size: 11px; color: #6c757d;">Rol / Puesto</label>
+                <select id="agendaRol">
+                    <option value="Gerente">Gerente</option>
+                    <option value="Ejecutivo Comercial">Ejecutivo Comercial</option>
+                    <option value="Administración Siniestro">Administración Siniestro</option>
+                    <option value="Peritos">Peritos</option>
+                </select>
+            </div>
+            <div>
+                <label style="font-size: 11px; color: #6c757d;">Nombre y Apellido</label>
+                <input type="text" id="agendaNombre" placeholder="Ej: Pedro Gómez">
+            </div>
+            <div>
+                <label style="font-size: 11px; color: #6c757d;">Teléfono 1</label>
+                <input type="text" id="agendaTel1" placeholder="Ej: 3511234567">
+            </div>
+            <div>
+                <label style="font-size: 11px; color: #6c757d;">Teléfono 2</label>
+                <input type="text" id="agendaTel2" placeholder="Ej: 3519876543">
+            </div>
+            <div class="full-width">
+                <label style="font-size: 11px; color: #6c757d;">Correo Electrónico</label>
+                <input type="email" id="agendaMail" placeholder="ejemplo@compania.com">
+            </div>
+            <button class="btn-guardar full-width" onclick="guardarContacto()">💾 Cargar Contacto</button>
+        </div>
+
+        <!-- LISTADO DE CONTACTOS GUARDADOS -->
+        <div style="margin-top: 15px;">
+            <div class="section-title" id="tituloAgendaListado">Contactos Guardados</div>
+            <div id="listaContactos"></div>
+        </div>
+    </div>
+
+    <!-- SECCIÓN INFERIOR: ACCIONES Y VISTA PREVIA -->
+    <div class="output-container">
+        <div class="section-title">Texto Generado Automáticamente</div>
+        <textarea id="outputTexto" placeholder="Texto Generado Automáticamente"></textarea>
+        
+        <div class="action-buttons">
+            <button class="btn-copy" onclick="copiarAlPortapapeles()">📋 Copiar Texto</button>
+            <button class="btn-whatsapp" onclick="enviarPorWhatsApp()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display:inline-block; vertical-align:middle;">
+                    <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397 0 11.948 0c3.179.001 6.165 1.24 8.413 3.488 2.248 2.248 3.483 5.236 3.48 8.414-.003 6.557-5.338 11.902-11.89 11.902-1.993-.001-3.951-.5-5.688-1.448L0 24zm6.59-4.846c1.656.982 3.511 1.5 5.4 1.51 5.434 0 9.853-4.387 9.856-9.782.002-2.613-1.013-5.07-2.859-6.918C17.14 2.116 14.683 1.1 12.074 1.1 6.638 1.1 2.222 5.519 2.219 10.916c-.001 1.898.506 3.754 1.472 5.394l-.993 3.627 3.715-.967zM17.487 14.4c-.27-.135-1.594-.783-1.84-.873-.248-.089-.427-.135-.607.135-.179.27-.696.873-.853 1.057-.157.183-.313.206-.583.071-.27-.135-1.138-.42-2.167-1.338-.802-.714-1.342-1.597-1.5-1.869-.157-.271-.017-.417.118-.552.122-.121.27-.315.405-.472.135-.158.179-.271.27-.45.09-.18.045-.337-.023-.472-.067-.135-.607-1.463-.83-2.003-.218-.524-.444-.453-.608-.461-.157-.008-.337-.011-.517-.011-.18 0-.473.067-.719.337-.247.27-.945.923-.945 2.25 0 1.328.967 2.61 1.101 2.79.135.179 1.902 2.904 4.609 4.069.645.278 1.148.444 1.541.569.648.206 1.237.177 1.704.107.521-.078 1.594-.652 1.821-1.25.227-.597.227-1.11.157-1.217-.07-.107-.247-.152-.518-.287z"/>
+                </svg>
+                Enviar por WhatsApp
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="toast" class="toast">¡Mensaje copiado con éxito! 👍</div>
+
+<script>
+    // BASE DE DATOS ESTRUCTURADA
+    const BaseDatos = {
+        cuentas: {
+            "Sancor": "Datos de Cuenta SANCOR:\nBanco: Del Sol\nCBU: 720169720000000000000\nAlias: SANCORSEGUROS.BDS.AR",
+            "Rio Uruguay": "Datos de Cuenta RIO URUGUAY:\nBanco: Credicoop (Cta Cte N° 10761/1)\nCBU: 1910219955021901076114",
+            "Mapfre": "Datos de Cuenta MAPFRE:\n(Espacio libre para carga de cuenta bancaria)",
+            "Nacion Seguros": "Datos de Cuenta NACIÓN SEGUROS:\nBanco: BNA (Cta Cte 30241/62)\nCBU: 0110599520000030241622",
+            "El Norte Seguros": "Datos de Cuenta EL NORTE SEGUROS:\n(Espacio libre para carga de cuenta bancaria)",
+            "Mercantil Andina": "Datos de Cuenta MERCANTIL ANDINA:\nBanco: Santander Rio (Cta Cte 042-2567/0)\nCBU: 0720042720000000256704",
+            "San Cristobal": "Datos de Cuenta SAN CRISTÓBAL:\nBanco: Santander\nCBU: 0720066320000000510840",
+            "Galicia": "Datos de Cuenta GALICIA:\n(Espacio libre para carga de cuenta bancaria)",
+            "Federacion Patronal": "Datos de Cuenta FEDERACIÓN PATRONAL:\nCBU: 0150522102000004387039",
+            "Allianz": "Datos de Cuenta ALLIANZ:\nCBU: 0070068920000002109839",
+            "Experta": "Datos de Cuenta EXPERTA:\nBanco: ICBC (Cuenta Corriente)\nCBU: 0150931502000111748071",
+            "Triunfo Seguros": "Datos de Cuenta TRIUNFO SEGUROS:\nBanco: BBVA Francés (Cuenta N° 484-001272-8)\nCBU: 0170484020000000127288",
+            "Zurich": "Datos de Cuenta ZURICH:\n(Espacio libre para carga de cuenta bancaria)"
+        },
+        gruas: {
+            "Sancor": "0800 333 2766 o por WhatsApp 3493-510404",
+            "Rio Uruguay": "0800-444-1441",
+            "Mapfre": "0810-666-7424",
+            "Nacion Seguros": "0800-333-3300",
+            "El Norte Seguros": "0800-888-4652",
+            "Mercantil Andina": "0800-777-2634 o por WhatsApp al 011-2808-0012",
+            "San Cristobal": "0810-222-8887 o enviar mensaje de WhatsApp al +54 11 2598-5281",
+            "Galicia": "0800-555-9998",
+            "Federacion Patronal": "0800-222-0022",
+            "Allianz": "0800-888-24324",
+            "Experta": "0800-777-7278",
+            "Triunfo Seguros": "0810-666-0302",
+            "Zurich": "0800-222-1600"
+        }
+    };
+
+    let opcionActual = '';
+    let filtroAreaActual = 'Todos';
+
+    function switchTab(tabId) {
+        document.querySelectorAll('.tab-btn:not(.sub-tab)').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.container > .sub-panel').forEach(panel => panel.classList.remove('active'));
+        
+        event.target.classList.add('active');
+        document.getElementById('panel-' + tabId).classList.add('active');
+        
+        if(tabId === 'siniestros') {
+            document.getElementById('section-companias-global').style.display = 'none';
+        } else {
+            document.getElementById('section-companias-global').style.display = 'block';
+        }
+        if(tabId === 'datos-cias') {
+            renderizarContactos();
+        }
+        clearActiveButtons();
+    }
+
+    function switchSubTab(subTabId) {
+        document.querySelectorAll('.sub-tab').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('stab-' + subTabId).classList.add('active');
+        
+        document.getElementById('sub-com-cotiz').classList.remove('active');
+        document.getElementById('sub-com-seguim').classList.remove('active');
+        document.getElementById('sub-com-inspec').classList.remove('active');
+        
+        document.getElementById('sub-com-' + subTabId).classList.add('active');
+        clearActiveButtons();
+    }
+
+    function clearActiveButtons() {
+        document.querySelectorAll('.grid-buttons button').forEach(b => b.classList.remove('active'));
+        document.getElementById('outputTexto').value = '';
+        opcionActual = '';
+        document.getElementById('tr-valores-box').style.display = 'none';
+    }
+
+    function cambiarCompaniaGlobal() { 
+        if(opcionActual) { generarMensaje(opcionActual); }
+        renderizarContactos();
+    }
+    
+    function actualizarMensaje() { if(opcionActual) { generarMensaje(opcionActual); } }
+    function actualizarTR() { if(opcionActual === 'cober_tr') { generarMensaje('cober_tr'); } }
+
+    function generarMensaje(tipo) {
+        opcionActual = tipo;
+        document.querySelectorAll('.grid-buttons button').forEach(b => b.classList.remove('active'));
+        const btn = document.getElementById('btn-' + tipo);
+        if(btn) btn.classList.add('active');
+
+        const nombre = document.getElementById('nombreCliente').value.trim() || "[Nombre Asegurado]";
+        const modelo = document.getElementById('modeloVehiculo').value.trim() || "[Vehículo]";
+        const cia = document.getElementById('selectCompania').value;
+        
+        let textoFinal = "";
+        const saludoEstandar = `Hola ${nombre}, ¿cómo estás!? `;
+        const introCotizacion = `Te coticé el vehículo por las 12 compañías con las que trabajo, te paso las mejores opciones de costo y cobertura:\n\n`;
+
+        switch(tipo) {
+            case 'pago_cbu':
+                textoFinal = `${saludoEstandar}Recibí desde cobranzas rechazo por el pago del Seguro, para regularizar te paso nro de CBU de la compañía para que realices la transferencia y me envies el comprobante de pago para que lo imputen en el sistema.\n\n${BaseDatos.cuentas[cia]}`;
+                break;
+            case 'pago_link':
+                textoFinal = `${saludoEstandar}Recibí desde cobranzas rechazo por el pago del Seguro, para regularizar Te paso link para abonar la cuota rechazada`;
+                break;
+            case 'pago_cupon':
+                textoFinal = `${saludoEstandar}Recibí desde cobranzas rechazo por el pago del Seguro, para regularizar Te paso cupon de pago de la cuota rechazada`;
+                break;
+            case 'sin_carga':
+                textoFinal = `Hola ${nombre} te paso imagen con todos los datos que me debes enviar para poder pasar el siniestro a la compañia, recorda que la denuncia la debemos cargar dentro de las 72hs de ocurrido.`;
+                break;
+            case 'sin_reclamo':
+                textoFinal = `Te paso certificado de cobertura y copia de la denuncia que son uno de los papeles que te van a pedir para presenter el reclamo.\n\nNormalmente todas solicitan los mismos datos y documentacion entre ellos:\n\n✅ Certificado de cobertura y denuncia.\n✅ Foto de Carnet de conducer.\n✅ Tarjeta verde.\n✅ Foto dni (algunas lo suelen pedir en la web)\n✅ Fotos de daño a la unidad donde se vea el daño y patente para identificar el vehiculo\n✅ foto de presupuesto donde se detralle costo de mano de obra y repuestos (algunas lo solicitan y otras no, esto lo detalla en el mismo link)\n\nTe paso el Link donde deben ingresar para el reclamo.\n\nCualquier duda me avisan.`;
+                break;
+            case 'sin_ok':
+                textoFinal = `Ya esta cargado el siniestro en la web de la compañia por lo que tu parte ya estaria cumplimentada. 👍\n\nCualquier duda me avisas!`;
+                break;
+            case 'sin_motos':
+                textoFinal = `Tene en cuenta que en este tipo de siniestros pueden contactarse con vos desde tu compañia para ampliar los datos sobre el choque.\nEn caso que te llegue alguna notificacion por parte del 3ro le sacas una foto y me la pasas el mismo dia quee la recibas para remitirla al tramitador y poner en conocimiento a la compañia.`;
+                break;
+            case 'sin_granizo':
+                textoFinal = `- Dia y Hora\n- Direccion donde Ocurrio\n- Especificar otro daño que no sea chapa (Ej. Faros, espejos, etc)\n- Foto carnet y Tarjeta verde\n- Alguna Foto del daño`;
+                break;
+            case 'cober_max3':
+                document.getElementById('tr-valores-box').style.display = 'none';
+                textoFinal = `${introCotizacion}🌟 **Opción MAX3 Sancor**\nCobertura:\n🚗 Responsabilidad Civil.\n🚫 Robo Total.\n🔥 Incendio Total.\n🛞 Robo Parcial (1 rueda por año).\n🧨 Incendio Parcial.\n💥 Destruccion Total.\n🚚 Servicio de Grua.`;
+                break;
+            case 'cober_a_sg':
+                document.getElementById('tr-valores-box').style.display = 'none';
+                textoFinal = `${introCotizacion}🚫 **Opción Solo Responsabilidad Civil Grúa**\nCobertura:\n🛡️ Seguro Obligatorio para Circular, cubre el daño que se le produzca a 3ros ante un siniestro.`;
+                break;
+            case 'cober_a_cg':
+                document.getElementById('tr-valores-box').style.display = 'none';
+                textoFinal = `${introCotizacion}🚚 **Opción Solo Responsabilidad Civil Con Grúa**\nCobertura:\n🛡️ Seguro Obligatorio para Circular, cubre el daño que se le produzca a 3ros ante un siniestro.`;
+                break;
+            case 'cober_b1':
+                document.getElementById('tr-valores-box').style.display = 'none';
+                textoFinal = `${introCotizacion}🛡️ **Opción **\nCobertura:\n🚗 Responsabilidad Civil.\n🚫 Robo Total.\n🔥 Incendio Total.\n🚚 Servicio de Grua.`;
+                break;
+            case 'cober_b':
+                document.getElementById('tr-valores-box').style.display = 'none';
+                textoFinal = `${introCotizacion}💥 **Opción **\nCobertura:\n🚗 Responsabilidad Civil.\n🚫 Robo Total.\n🔥 Incendio Total.\n💥 Destruccion Total.\n🚚 Servicio de Grua.`;
+                break;
+            case 'cober_c1':
+                document.getElementById('tr-valores-box').style.display = 'none';
+                textoFinal = `${introCotizacion}🔒 **Opción **\nCobertura:\n🚗 Responsabilidad Civil.\n🚫 Robo Total.\n🔥 Incendio Total.\n🛞 Robo Parcial (restricciones segun compañia).\n🧨 Incendio Parcial.\n🚚 Servicio de Grua.`;
+                break;
+            case 'cober_c':
+                document.getElementById('tr-valores-box').style.display = 'none';
+                textoFinal = `${introCotizacion}💎 **Opción **\nCobertura:\n🚗 Responsabilidad Civil.\n🚫 Robo Total.\n🔥 Incendio Total.\n🛞 Robo Parcial (restricciones segun compañia).\n🧨 Incendio Parcial.\n💥 Destruccion Total.\n🚚 Servicio de Grua.`;
+                break;
+            case 'cober_expl':
+                document.getElementById('tr-valores-box').style.display = 'none';
+                textoFinal = `${introCotizacion}✨ **Opción **\nCobertura:\n🚗 Responsabilidad Civil.\n🚫 Robo Total.\n🔥 Incendio Total.\n🛞 Robo Parcial.\n🧨 Incendio Parcial.\n💥 Destruccion Total.\n🪟 Cristales Laterales por intento de robo.\n🔐 Cerraduras Externas por intento de robo.\n🛻 Servicio de Grua.`;
+                break;
+            case 'cober_expv':
+                document.getElementById('tr-valores-box').style.display = 'none';
+                textoFinal = `${introCotizacion}⚡ **Opción**\nCobertura:\n-🚗 Responsabilidad Civil.\n-🚫 Robo Total.\n-🔥 Incendio Total.\n-🛞 Robo Parcial (restricciones segun compañia).\n-🧨 Incendio Parcial\n-💥 Destruccion Total.\n-🪟 Cristales.\n-🔐 Cerraduras Externas por intento de robo.\n-🛻 Servicio de Grua.`;
+                break;
+            case 'cober_sigma':
+                document.getElementById('tr-valores-box').style.display = 'none';
+                textoFinal = `${introCotizacion}🌪️ **Opción **\nCobertura:\n-🚗 Responsabilidad Civil.\n-🚫 Robo Total.\n-🔥 Incendio Total.\n-🛞 Robo Parcial (restricciones segun compañia).\n-🧨 Incendio Parcial\n-💥 Destruccion Total.\n-🪟 Cristales.\n-🔐 Cerraduras Externas por intento de robo.\n-⛈️ Granizo.\n-🛻 Servicio de Grua.`;
+                break;
+            case 'cober_tr':
+                document.getElementById('tr-valores-box').style.display = 'block';
+                textoFinal = `${introCotizacion}👑 **Opción Todo Riesgo**\nCobertura:\n- Franquicia 2% de Suma asegurada, costo $${document.getElementById('tr2').value}\n- Franquicia 3% de Suma asegurada, costo $${document.getElementById('tr3').value}\n- Franquicia 4% de Suma asegurada, costo $${document.getElementById('tr4').value}\n- Franquicia 5% de Suma asegurada, costo $${document.getElementById('tr5').value}\n- Franquicia 7% de Suma asegurada, costo $${document.getElementById('tr7').value}\n- Franquicia 8% de Suma asegurada, costo $${document.getElementById('tr8').value}\n- Franquicia 10% de Suma asegurada, costo $${document.getElementById('tr10').value}`;
+                break;
+            case 'seg_2':
+                textoFinal = `Hola ${nombre}, ¿cómo estás? Te escribía simplemente para saber si habías tenido tiempo de revisar la propuesta que te armé para el ${modelo}. Avisame si te quedó alguna duda con las coberturas o si querés que modifiquemos algo para adaptarlo mejor a lo que buscás. ¡Un abrazo!`;
+                break;
+            case 'seg_3':
+                textoFinal = `Hola ${nombre}, ¿cómo va? Quería avisarte que las tarifas de las compañías suelen actualizarse rápido y no quería que se venza la propuesta del ${modelo} sin consultarte antes. Si querés que le demos de alta hoy mismo o si preferís revisar otra alternativa, avisame y lo resolvemos en cinco minutos. ¡Saludos!`;
+                break;
+            case 'insp_link':
+                textoFinal = `Te paso link donde debes ingresar y por medio del cual tomar las fotos tal como te va a indicar el mismo link`;
+                break;
+            case 'insp_comun':
+                textoFinal = `Te paso instructivo con el detalle de como debes tomar las fotos, el vehiculo debe estar en un solo lugar sin moverlo y con luz natural`;
+                break;
+            case 'insp_allianz':
+                textoFinal = `ya cargue todo, fijate que te va a llegar un mail de Tecnored, ingresas y buscas donde dice INGRESAR AQUI ahi te va  adar dos opciones para la inspeccion Asegurado o Productor, elegis Asegurado, confirmas tu mail y telefono, luego te llega otro mail con el lik desde donde debes tomar las fotos.\nApenas te confirme el link que se enviaron las fotos avisame, eso lo autorizan en la compañia`;
+                break;
+            case 'cia_grua':
+                textoFinal = `Te paso el nro de telefono para coordinar el servicio de grua de tu póliza de ${cia}, llamas a ese nro, te van a pedir tus datos y coordinan el servicio y te pasan el tiempo de demora segun la demanda que tenga el servicio en este momento:\n\n📞 ${BaseDatos.gruas[cia]}`;
+                break;
+        }
+
+        document.getElementById('outputTexto').value = textoFinal;
+    }
+
+    // LÓGICA DE AGENDA / PERSISTENCIA LOCAL
+    function guardarContacto() {
+        const cia = document.getElementById('selectCompania').value;
+        const rol = document.getElementById('agendaRol').value;
+        const nombre = document.getElementById('agendaNombre').value.trim();
+        const tel1 = document.getElementById('agendaTel1').value.trim();
+        const tel2 = document.getElementById('agendaTel2').value.trim();
+        const mail = document.getElementById('agendaMail').value.trim();
+
+        if(!nombre) {
+            alert('Por favor, ingresa al menos el Nombre y Apellido.');
+            return;
+        }
+
+        const nuevoContacto = {
+            id: Date.now(),
+            compania: cia,
+            rol: rol,
+            nombre: nombre,
+            tel1: tel1,
+            tel2: tel2,
+            mail: mail,
+            area: (rol === 'Gerente' || rol === 'Ejecutivo Comercial') ? 'Comercial' : 'Siniestros'
+        };
+
+        let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
+        contactos.push(nuevoContacto);
+        localStorage.setItem('agenda_seguros', JSON.stringify(contactos));
+
+        // Limpiar campos
+        document.getElementById('agendaNombre').value = '';
+        document.getElementById('agendaTel1').value = '';
+        document.getElementById('agendaTel2').value = '';
+        document.getElementById('agendaMail').value = '';
+
+        renderizarContactos();
+    }
+
+    function borrarContacto(id) {
+        let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
+        contactos = contactos.filter(c => c.id !== id);
+        localStorage.setItem('agenda_seguros', JSON.stringify(contactos));
+        renderizarContactos();
+    }
+
+    function filtrarAgenda(area) {
+        filtroAreaActual = area;
+        renderizarContactos();
+    }
+
+    function renderizarContactos() {
+        const cia = document.getElementById('selectCompania').value;
+        const contenedor = document.getElementById('listaContactos');
+        const titulo = document.getElementById('tituloAgendaListado');
+        let contactos = JSON.parse(localStorage.getItem('agenda_seguros') || '[]');
+
+        titulo.innerText = `Contactos - ${cia} (${filtroAreaActual})`;
+
+        let contactosFiltrados = contactos.filter(c => c.compania === cia);
+        if(filtroAreaActual !== 'Todos') {
+            contactosFiltrados = contactosFiltrados.filter(c => c.area === filtroAreaActual || filtroAreaActual === 'Todos');
+        }
+
+        if(contactosFiltrados.length === 0) {
+            contenedor.innerHTML = '<p style="font-size: 13px; color: #888; font-style: italic; margin-top: 5px;">No hay contactos guardados para esta selección.</p>';
+            return;
+        }
+
+        let html = '';
+        contactosFiltrados.forEach(c => {
+            html += `
+                <div class="contact-card">
+                    <button class="btn-delete" onclick="borrarContacto(${c.id})">Eliminar</button>
+                    <h4>👤 ${c.nombre} <small style="color:#0d6efd;">(${c.rol})</small></h4>
+                    <p>📞 Tel 1: ${c.tel1 || 'N/A'}${c.tel2 ? ' | Tel 2: ' + c.tel2 : ''}</p>
+                    <p>✉️ Mail: ${c.mail || 'N/A'}</p>
+                </div>
+            `;
+        });
+        contenedor.innerHTML = html;
+    }
+
+    function copiarAlPortapapeles() {
+        const areaTexto = document.getElementById('outputTexto');
+        if(!areaTexto.value) { alert('Por favor, selecciona una opción primero.'); return; }
+        areaTexto.select();
+        navigator.clipboard.writeText(areaTexto.value).then(() => {
+            const toast = document.getElementById("toast");
+            toast.className = "toast show";
+            setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+        });
+    }
+
+    function enviarPorWhatsApp() {
+        const areaTexto = document.getElementById('outputTexto').value;
+        let celular = document.getElementById('celularCliente').value.trim();
+
+        if(!areaTexto) {
+            alert('Por favor, selecciona primero una opción para armar el mensaje.');
+            return;
+        }
+
+        celular = celular.replace(/\D/g, '');
+
+        if(!celular) {
+            alert('Por favor, ingresa el número de celular del cliente arriba para poder enviarlo directo.');
+            return;
+        }
+
+        if (!celular.startsWith('54')) {
+            celular = '54' + celular;
+        }
+
+        const textoCodificado = encodeURIComponent(areaTexto);
+        const urlWhatsApp = `https://api.whatsapp.com/send?phone=${celular}&text=${textoCodificado}`;
+
+        window.open(urlWhatsApp, '_blank');
+    }
+</script>
+
+</body>
+</html>
